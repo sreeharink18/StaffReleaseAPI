@@ -19,3 +19,4 @@ namespace StaffReleaseAPI.Services.Mapping
 
         }
     }
+}
