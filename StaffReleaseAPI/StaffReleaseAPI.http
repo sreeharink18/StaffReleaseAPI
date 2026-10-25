@@ -1,0 +1,6 @@
+@StaffReleaseAPI_HostAddress = http://localhost:5213
+
+GET {{StaffReleaseAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
