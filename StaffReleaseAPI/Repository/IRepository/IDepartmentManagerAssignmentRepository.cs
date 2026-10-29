@@ -4,6 +4,6 @@ namespace StaffReleaseAPI.Repository.IRepository
 {
     public interface IDepartmentManagerAssignmentRepository : IRepository<DepartmentManagerAssignment>
     {
-        Task UpdateAsync(DepartmentManagerAssignment departmentManagerAssignment);)
+        Task UpdateAsync(DepartmentManagerAssignment departmentManagerAssignment);
     }
 }
