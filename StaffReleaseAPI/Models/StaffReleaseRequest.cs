@@ -25,7 +25,7 @@ namespace StaffReleaseAPI.Models
         public string? IVisionId { get; set; }
 
         // Request workflow
-        public ReleaseStatus Status { get; set; } = ReleaseStatus.ClearancePending;
+        public string Status { get; set; } = StaticData.ReleaseStatus_ClearancePending;
 
         public string CreatedById { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -34,6 +34,7 @@ namespace StaffReleaseAPI.Models
         public DateTime? CancelledAt { get; set; }
         public string? CancellationReason { get; set; }
 
+        public ICollection<RequestRequiredDepartment> RequiredDepartments { get; set; } = new List<RequestRequiredDepartment>();
 
     }
 }

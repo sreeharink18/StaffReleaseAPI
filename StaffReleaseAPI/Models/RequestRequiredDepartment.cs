@@ -20,7 +20,7 @@ namespace StaffReleaseAPI.Models
         [ForeignKey(nameof(AssignedManagerUserId))]
         public ApplicationUser AssignedManagerUser { get; set; } = null!;
 
-        public ClearanceStatus Status { get; set; } = ClearanceStatus.Pending;
+        public string Status { get; set; } = StaticData.ClearanceStatus_Pending;
 
         public string? ApprovedById { get; set; }
 

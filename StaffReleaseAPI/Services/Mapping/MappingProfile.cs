@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using StaffReleaseAPI.Models;
 using StaffReleaseAPI.Models.DTOs.DepartmentDtoFolder;
+using StaffReleaseAPI.Models.DTOs.StaffReleaseDtoFolder;
 using StaffReleaseAPI.Models.DTOs.UserDtoFolder;
 
 namespace StaffReleaseAPI.Services.Mapping
@@ -40,6 +41,18 @@ namespace StaffReleaseAPI.Services.Mapping
             CreateMap<ApplicationUser, ManagerUserDetailDto>();
 
             CreateMap<DepartmentManagerAssignment, ResponseDepartmentManagerAssignmentDto>();
+
+
+            CreateMap<CreateStaffReleaseRequestDto, StaffReleaseRequest>()
+               .ForMember(dest => dest.RequestId, opt => opt.Ignore())
+               .ForMember(dest => dest.Status, opt => opt.Ignore())
+               .ForMember(dest => dest.CreatedById, opt => opt.Ignore())
+               .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+               .ForMember(dest => dest.RequiredDepartments, opt => opt.Ignore());
+
+            CreateMap<RequestRequiredDepartment, CreatedClearanceDto>();
+
+            CreateMap<StaffReleaseRequest, StaffReleaseCreatedResponseDto>();
 
         }
     }

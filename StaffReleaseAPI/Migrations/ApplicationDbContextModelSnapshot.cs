@@ -305,8 +305,9 @@ namespace StaffReleaseAPI.Migrations
                     b.Property<int>("RequestId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RequestRequiredDepartmentId");
 
@@ -378,8 +379,9 @@ namespace StaffReleaseAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VoidId")
                         .HasColumnType("nvarchar(max)");
@@ -474,7 +476,7 @@ namespace StaffReleaseAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("StaffReleaseAPI.Models.StaffReleaseRequest", "StaffReleaseRequest")
-                        .WithMany()
+                        .WithMany("RequiredDepartments")
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -484,6 +486,11 @@ namespace StaffReleaseAPI.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("StaffReleaseRequest");
+                });
+
+            modelBuilder.Entity("StaffReleaseAPI.Models.StaffReleaseRequest", b =>
+                {
+                    b.Navigation("RequiredDepartments");
                 });
 #pragma warning restore 612, 618
         }
