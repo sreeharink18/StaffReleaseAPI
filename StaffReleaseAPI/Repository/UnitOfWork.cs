@@ -10,6 +10,7 @@ namespace StaffReleaseAPI.Repository
         public IApplicationUserRepository ApplicationUserRepository { get; private set; }
         public IDepartmentRepository DepartmentRepository { get; private set; }
         public IDepartmentManagerAssignmentRepository DepartmentManagerAssignmentRepository { get; private set; }
+        public IDepartmentUserAssignmentRepository DepartmentUserAssignmentRepository { get; private set; }
         public IRequestRequiredDepartmentRepository RequestRequiredDepartmentRepository { get; private set; }
         public IStaffReleaseRequestRepository StaffReleaseRequestRepository { get; private set; }
 
@@ -19,6 +20,7 @@ namespace StaffReleaseAPI.Repository
             ApplicationUserRepository = new ApplicationUserRepository(_db);
             DepartmentRepository = new DepartmentRepository(_db);
             DepartmentManagerAssignmentRepository = new DepartmentManagerAssignmentRepository(_db);
+            DepartmentUserAssignmentRepository = new DepartmentUserAssignmentRepository(_db);
             RequestRequiredDepartmentRepository = new RequestRequiredDepartmentRepository(_db);
             StaffReleaseRequestRepository = new StaffReleaseRequestRepository(_db);
         }

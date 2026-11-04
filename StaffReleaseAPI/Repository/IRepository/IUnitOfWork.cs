@@ -5,6 +5,7 @@
         IApplicationUserRepository ApplicationUserRepository { get; }
         IDepartmentRepository DepartmentRepository { get; }
         IDepartmentManagerAssignmentRepository DepartmentManagerAssignmentRepository { get; }
+        IDepartmentUserAssignmentRepository DepartmentUserAssignmentRepository { get; }
         IRequestRequiredDepartmentRepository RequestRequiredDepartmentRepository { get; }
         IStaffReleaseRequestRepository StaffReleaseRequestRepository { get; }
 

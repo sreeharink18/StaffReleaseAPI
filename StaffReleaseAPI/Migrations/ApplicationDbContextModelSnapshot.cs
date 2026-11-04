@@ -278,6 +278,49 @@ namespace StaffReleaseAPI.Migrations
                     b.ToTable("DepartmentManagerAssignments");
                 });
 
+            modelBuilder.Entity("StaffReleaseAPI.Models.DepartmentUserAssignment", b =>
+                {
+                    b.Property<int>("AssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssignmentId"));
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AssignedById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("CanApproveClearance")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanViewClearance")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsManager")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AssignmentId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DepartmentUserAssignments");
+                });
+
             modelBuilder.Entity("StaffReleaseAPI.Models.RequestRequiredDepartment", b =>
                 {
                     b.Property<int>("RequestRequiredDepartmentId")
@@ -459,6 +502,25 @@ namespace StaffReleaseAPI.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("ManagerUser");
+                });
+
+            modelBuilder.Entity("StaffReleaseAPI.Models.DepartmentUserAssignment", b =>
+                {
+                    b.HasOne("StaffReleaseAPI.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StaffReleaseAPI.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StaffReleaseAPI.Models.RequestRequiredDepartment", b =>
