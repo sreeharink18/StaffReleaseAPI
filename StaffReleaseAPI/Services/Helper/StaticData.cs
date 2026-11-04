@@ -9,6 +9,8 @@
 
         public static string Role_User = "USER";
 
+        public static string Role_Staff = "STAFF";
+
         //Overall release status for request staff release
         public static string ReleaseStatus_ClearancePending = "CLEARANCEPENDING";
         public static string ReleaseStatus_ClearanceInProgress = "CLEARANCEINPROGRESS";

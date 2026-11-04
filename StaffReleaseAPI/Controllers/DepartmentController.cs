@@ -108,26 +108,40 @@ namespace StaffReleaseAPI.Controllers
                 return BadRequest(ApiResponseHelper.ErrorResponse("something went wrong while fetching department managers."));
             }
         }
-        [HttpGet("GetDepartmentManagerByUserId/{userId}")]
-        public async Task<IActionResult> GetDepartmentManagerByUserId(string userId)
+        [HttpPost("AssignDepartmentUser")]
+        public async Task<IActionResult> AssignDepartmentUser([FromBody] RequestDepartmentUserAssignmentCreationDto reqDeptUserDto)
         {
             try
             {
-                var assignment = await _unitOfWork.DepartmentManagerAssignmentRepository.GetAsync(u => u.ManagerUserId == userId && u.IsActive, "Department,ManagerUser");
+                var departmentUser = _mapper.Map<DepartmentUserAssignment>(reqDeptUserDto);
+                await _unitOfWork.DepartmentUserAssignmentRepository.AddAsync(departmentUser);
+                await _unitOfWork.Save();
+                return Ok(ApiResponseHelper.SuccessResponse(departmentUser, HttpStatusCode.Created));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ApiResponseHelper.ErrorResponse("something went wrong while assigning the department user."));
+            }
+        }
+
+        [HttpGet("GetDepartmentUserByUserId/{userId}")]
+        public async Task<IActionResult> GetDepartmentUserByUserId(string userId)
+        {
+            try
+            {
+                var assignment = await _unitOfWork.DepartmentUserAssignmentRepository.GetAsync(u => u.UserId == userId && u.IsActive, "Department,User");
                 var user = await _unitOfWork.ApplicationUserRepository.GetAsync(u => u.Id == userId);
 
                 if (assignment == null)
                 {
                     return NotFound(ApiResponseHelper.ErrorResponse("Department Manager not found."));
                 }
-                var result = _mapper.Map<ResponseDepartmentManagerAssignmentDto>(assignment);
-                if (assignment.ManagerUser != null)
+                var result = _mapper.Map<ResponseDepartmentUserAssignmentDto>(assignment);
+                if (assignment.UserId != null)
                 {
-                    result.ManagerUser = _mapper.Map<ManagerUserDetailDto>(
-                        assignment.ManagerUser
-                    );
+                    result.User = _mapper.Map<UserDetailDto>(assignment.User);
 
-                    result.ManagerUser.Roles = (await _userManager.GetRolesAsync(assignment.ManagerUser)).ToList().FirstOrDefault();
+                    result.User.Roles = (await _userManager.GetRolesAsync(assignment.User)).ToList().FirstOrDefault();
                 }
                 return Ok(ApiResponseHelper.SuccessResponse(result));
             }
@@ -136,87 +150,49 @@ namespace StaffReleaseAPI.Controllers
                 return BadRequest(ApiResponseHelper.ErrorResponse("something went wrong while fetching the department manager."));
             }
         }
-        [HttpGet("GetDepartmentManagerByDepartmentId/{departmentId}")]
+        [HttpGet("GetDepartmentUserByDepartmentId/{departmentId}")]
         public async Task<IActionResult> GetDepartmentManagerByDepartmentId(int departmentId)
         {
             try
             {
-                var assignment = await _unitOfWork.DepartmentManagerAssignmentRepository.GetAsync(u => u.DepartmentId == departmentId && u.IsActive, "Department,ManagerUser");
+                var assignment = await _unitOfWork.DepartmentUserAssignmentRepository.GetAllAsync(u => u.DepartmentId == departmentId && u.IsActive, "Department,ManagerUser");
                 if (assignment == null)
                 {
                     return NotFound(ApiResponseHelper.ErrorResponse("Department Manager not found."));
                 }
-                var user = await _unitOfWork.ApplicationUserRepository.GetAsync(u => u.Id == assignment.ManagerUserId);
-
-
-                var result = _mapper.Map<ResponseDepartmentManagerAssignmentDto>(assignment);
-                if (assignment.ManagerUser != null)
+                List<ResponseDepartmentUserAssignmentDto> response = new List<ResponseDepartmentUserAssignmentDto>();
+                foreach (var item in assignment)
                 {
-                    result.ManagerUser = _mapper.Map<ManagerUserDetailDto>(
-                        assignment.ManagerUser
-                    );
+                    var user = await _unitOfWork.ApplicationUserRepository.GetAsync(u => u.Id == item.UserId);
+                    var result = _mapper.Map<ResponseDepartmentUserAssignmentDto>(assignment);
+                    if (item.UserId != null)
+                    {
+                        result.User = _mapper.Map<UserDetailDto>(item.User);
 
-                    result.ManagerUser.Roles = (await _userManager.GetRolesAsync(assignment.ManagerUser)).ToList().FirstOrDefault();
+                        result.User.Roles = (await _userManager.GetRolesAsync(item.User)).ToList().FirstOrDefault();
+                    }
+                    response.Add(result);
                 }
+                //var user = await _unitOfWork.ApplicationUserRepository.GetAsync(u => u.Id == assignment.ManagerUserId);
 
-                return Ok(ApiResponseHelper.SuccessResponse(result));
+
+                //var result = _mapper.Map<ResponseDepartmentManagerAssignmentDto>(assignment);
+                //if (assignment.ManagerUser != null)
+                //{
+                //    result.ManagerUser = _mapper.Map<ManagerUserDetailDto>(
+                //        assignment.ManagerUser
+                //    );
+
+                //    result.ManagerUser.Roles = (await _userManager.GetRolesAsync(assignment.ManagerUser)).ToList().FirstOrDefault();
+                //}
+
+                return Ok(ApiResponseHelper.SuccessResponse(response));
             }
             catch (Exception ex)
             {
                 return BadRequest(ApiResponseHelper.ErrorResponse("something went wrong while fetching the department manager."));
             }
         }
-        [HttpPost("AssignDepartmentManager")]
-        public async Task<IActionResult> AssignDepartmentManager([FromBody] RequestDepartmentManagerAssignmentDto reqDeptManagerDto)
-        {
-            try
-            {
-                var departmentManager = _mapper.Map<DepartmentManagerAssignment>(reqDeptManagerDto);
-                await _unitOfWork.DepartmentManagerAssignmentRepository.AddAsync(departmentManager);
-                await _unitOfWork.Save();
-                return Ok(ApiResponseHelper.SuccessResponse(departmentManager, HttpStatusCode.Created));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ApiResponseHelper.ErrorResponse("something went wrong while assigning the department manager."));
-            }
-        }
-        [HttpPut("UpdateAssignDepartmentManager/{id}")]
-        public async Task<IActionResult> UpdateDepartmentManager(int id, [FromBody] RequestDepartmentManagerAssignmentUpdateDto reqDeptManagerUpdateDto)
-        {
-            try
-            {
-                var existingDepartmentManager = await _unitOfWork.DepartmentManagerAssignmentRepository.GetAsync(d => d.AssignmentId == id);
-                if (existingDepartmentManager == null)
-                {
-                    return NotFound(ApiResponseHelper.ErrorResponse("Department Manager not found."));
-                }
 
-
-                if (!string.IsNullOrEmpty(reqDeptManagerUpdateDto.ManagerUserId) || existingDepartmentManager.ManagerUserId != reqDeptManagerUpdateDto.ManagerUserId)
-                {
-                    existingDepartmentManager.ManagerUserId = reqDeptManagerUpdateDto.ManagerUserId;
-                }
-                if (!string.IsNullOrEmpty(reqDeptManagerUpdateDto.AssignedById) || existingDepartmentManager.AssignedById != reqDeptManagerUpdateDto.AssignedById)
-                {
-                    existingDepartmentManager.AssignedById = reqDeptManagerUpdateDto.AssignedById;
-                }
-
-                if (reqDeptManagerUpdateDto.IsActive.HasValue && existingDepartmentManager.IsActive != reqDeptManagerUpdateDto.IsActive.Value)
-                {
-                    existingDepartmentManager.IsActive = reqDeptManagerUpdateDto.IsActive.Value;
-                }
-                existingDepartmentManager.AssignedAt = DateTime.UtcNow;
-
-
-                await _unitOfWork.DepartmentManagerAssignmentRepository.UpdateAsync(existingDepartmentManager);
-                await _unitOfWork.Save();
-                return Ok(ApiResponseHelper.SuccessResponse(existingDepartmentManager));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ApiResponseHelper.ErrorResponse("something went wrong while updating the department manager."));
-            }
-        }
     }
 }

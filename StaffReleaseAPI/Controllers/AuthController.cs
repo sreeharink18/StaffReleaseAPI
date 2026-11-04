@@ -90,6 +90,7 @@ namespace StaffReleaseAPI.Controllers
                         await _roleManager.CreateAsync(new IdentityRole(StaticData.Role_HRStaff));
                         await _roleManager.CreateAsync(new IdentityRole(StaticData.Role_HRManager));
                         await _roleManager.CreateAsync(new IdentityRole(StaticData.Role_DepartmentManager));
+                        await _roleManager.CreateAsync(new IdentityRole(StaticData.Role_Staff));
                     }
                     if (model.Role == StaticData.Role_Admin)
                     {
@@ -106,6 +107,10 @@ namespace StaffReleaseAPI.Controllers
                     else if (model.Role == StaticData.Role_DepartmentManager)
                     {
                         await _userManager.AddToRoleAsync(newUserDto, StaticData.Role_DepartmentManager);
+                    }
+                    else if (model.Role == StaticData.Role_Staff)
+                    {
+                        await _userManager.AddToRoleAsync(newUserDto, StaticData.Role_Staff);
                     }
                     else
                     {

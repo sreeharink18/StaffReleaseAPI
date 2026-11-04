@@ -37,10 +37,26 @@ namespace StaffReleaseAPI.Services.Mapping
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
                 .ForMember(dest => dest.AssignedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
+            CreateMap<RequestDepartmentUserAssignmentCreationDto, DepartmentUserAssignment>()
+                .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.IsManager, opt => opt.MapFrom(src => src.IsManager))
+                .ForMember(dest => dest.CanViewClearance, opt => opt.MapFrom(src => src.CanViewClearance))
+                .ForMember(dest => dest.CanApproveClearance, opt => opt.MapFrom(src => src.CanApproveClearance))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.AssignedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+
+
 
             CreateMap<ApplicationUser, ManagerUserDetailDto>();
-
             CreateMap<DepartmentManagerAssignment, ResponseDepartmentManagerAssignmentDto>();
+
+
+
+            //mapping for user details based on the department user assignment
+            CreateMap<ApplicationUser, UserDetailDto>();
+            CreateMap<DepartmentUserAssignment, ResponseDepartmentUserAssignmentDto>();
 
 
             CreateMap<CreateStaffReleaseRequestDto, StaffReleaseRequest>()
