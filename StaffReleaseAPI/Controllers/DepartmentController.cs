@@ -155,7 +155,7 @@ namespace StaffReleaseAPI.Controllers
         {
             try
             {
-                var assignment = await _unitOfWork.DepartmentUserAssignmentRepository.GetAllAsync(u => u.DepartmentId == departmentId && u.IsActive, "Department,ManagerUser");
+                var assignment = await _unitOfWork.DepartmentUserAssignmentRepository.GetAllAsync(u => u.DepartmentId == departmentId && u.IsActive, "Department,User");
                 if (assignment == null)
                 {
                     return NotFound(ApiResponseHelper.ErrorResponse("Department Manager not found."));
@@ -164,12 +164,12 @@ namespace StaffReleaseAPI.Controllers
                 foreach (var item in assignment)
                 {
                     var user = await _unitOfWork.ApplicationUserRepository.GetAsync(u => u.Id == item.UserId);
-                    var result = _mapper.Map<ResponseDepartmentUserAssignmentDto>(assignment);
-                    if (item.UserId != null)
+                    var result = _mapper.Map<ResponseDepartmentUserAssignmentDto>(item);
+                    if (user != null)
                     {
-                        result.User = _mapper.Map<UserDetailDto>(item.User);
+                        //result.User = _mapper.Map<UserDetailDto>(user);
 
-                        result.User.Roles = (await _userManager.GetRolesAsync(item.User)).ToList().FirstOrDefault();
+                        result.User.Roles = (await _userManager.GetRolesAsync(user)).ToList().FirstOrDefault();
                     }
                     response.Add(result);
                 }

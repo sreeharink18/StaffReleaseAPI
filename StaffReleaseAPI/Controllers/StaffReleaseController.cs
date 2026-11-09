@@ -58,14 +58,14 @@ namespace StaffReleaseAPI.Controllers
 
                 foreach (var departmentId in departmentIds)
                 {
-                    var assignment = await _unitOfWork.DepartmentManagerAssignmentRepository.GetAsync(x => x.DepartmentId == departmentId && x.IsActive);
+                    var assignment = await _unitOfWork.DepartmentUserAssignmentRepository.GetAsync(x => x.DepartmentId == departmentId && x.IsActive && x.IsManager);
 
-                    if (assignment == null || string.IsNullOrWhiteSpace(assignment.ManagerUserId))
+                    if (assignment == null || string.IsNullOrWhiteSpace(assignment.UserId))
                     {
                         return BadRequest(ApiResponseHelper.ErrorResponse($"No active manager is assigned to department {departmentId}."));
                     }
 
-                    managerIdsByDepartment[departmentId] = assignment.ManagerUserId;
+                    managerIdsByDepartment[departmentId] = assignment.UserId;
                 }
 
                 // 5. Map the request DTO to the entity
@@ -83,8 +83,7 @@ namespace StaffReleaseAPI.Controllers
                         new RequestRequiredDepartment
                         {
                             DepartmentId = departmentId,
-                            AssignedManagerUserId =
-                                managerIdsByDepartment[departmentId],
+                            AssignedManagerUserId = managerIdsByDepartment[departmentId],
                             Status = StaticData.ClearanceStatus_Pending
                         });
                 }
@@ -162,6 +161,20 @@ namespace StaffReleaseAPI.Controllers
                 })
                 .ToList();
             return Ok(ApiResponseHelper.SuccessResponse(result));
+        }
+        [HttpGet("GetAllRequestDetailsByUserId/{userId}")]
+        public async Task<IActionResult> GetAllRequestDetailsByUserId(string userId)
+        {
+            var department = await _unitOfWork.DepartmentUserAssignmentRepository.GetAsync(u => u.UserId == userId && u.IsActive, "Department,User");
+            if (department == null)
+            {
+                return NotFound(ApiResponseHelper.ErrorResponse("Department User not found."));
+            }
+            var staffReleaseDetailByDepId = await _unitOfWork.RequestRequiredDepartmentRepository.GetAllAsync(u => u.DepartmentId == department.DepartmentId, includeProperties: "StaffReleaseRequest,Department");
+
+            //var clearances = await _unitOfWork.RequestRequiredDepartmentRepository.GetAllAsync(includeProperties: "StaffReleaseRequest,Department");
+
+            return Ok(ApiResponseHelper.SuccessResponse(staffReleaseDetailByDepId));
         }
     }
 }

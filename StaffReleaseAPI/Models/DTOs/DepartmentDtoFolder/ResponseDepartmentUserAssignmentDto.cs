@@ -12,10 +12,11 @@ namespace StaffReleaseAPI.Models.DTOs.DepartmentDtoFolder
         public string UserId { get; set; } = string.Empty;
 
         public UserDetailDto? User { get; set; }
-
-        public string AssignedById { get; set; } = string.Empty;
-        public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
-
+        public bool IsManager { get; set; }
+        public bool CanViewClearance { get; set; }
+        public bool CanApproveClearance { get; set; }
         public bool IsActive { get; set; } = true;
+        //public string AssignedById { get; set; } = string.Empty;
+        public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
     }
 }
