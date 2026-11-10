@@ -170,11 +170,21 @@ namespace StaffReleaseAPI.Controllers
             {
                 return NotFound(ApiResponseHelper.ErrorResponse("Department User not found."));
             }
-            var staffReleaseDetailByDepId = await _unitOfWork.RequestRequiredDepartmentRepository.GetAllAsync(u => u.DepartmentId == department.DepartmentId, includeProperties: "StaffReleaseRequest,Department");
+            var staffReleaseDetailIdsByDepId = await _unitOfWork.RequestRequiredDepartmentRepository.GetAllAsync(u => u.DepartmentId == department.DepartmentId);
 
+            var staffReleaseDetail = new List<StaffReleaseRequest>();
+
+            foreach (var item in staffReleaseDetailIdsByDepId)
+            {
+                var staffReleaseRequest = await _unitOfWork.StaffReleaseRequestRepository.GetAsync(u => u.RequestId == item.RequestId);
+                if (staffReleaseRequest != null)
+                {
+                    staffReleaseDetail.Add(staffReleaseRequest);
+                }
+            }
             //var clearances = await _unitOfWork.RequestRequiredDepartmentRepository.GetAllAsync(includeProperties: "StaffReleaseRequest,Department");
 
-            return Ok(ApiResponseHelper.SuccessResponse(staffReleaseDetailByDepId));
+            return Ok(ApiResponseHelper.SuccessResponse(staffReleaseDetail));
         }
     }
 }
